@@ -1,13 +1,16 @@
 from typing import List
-
 from pydantic import BaseModel
+
+
+class Player(BaseModel):
+    id: int
+    points: int = 0
 
 
 class Robot(BaseModel):
     id: int
     x: int
     y: int
-    points: int = 0  # Default points to 0
 
 
 class Dinosaur(BaseModel):
@@ -17,22 +20,6 @@ class Dinosaur(BaseModel):
 
 
 class BoardState(BaseModel):
+    players: List[Player]
     robots: List[Robot]
     dinosaurs: List[Dinosaur]
-
-
-class RobotMove(BaseModel):
-    robot_id: int
-    action: str
-
-
-class GameState(BaseModel):
-    robots: List[Robot]
-    dinosaurs: List[Dinosaur]
-    player_points: int = 0  # Default player points to 0
-
-
-class PlayerActionResponse(BaseModel):
-    success: bool
-    message: str
-    game_state: GameState
