@@ -1,8 +1,10 @@
 import asyncio
+from http.client import HTTPException
 
 from fastapi import FastAPI
 
-from app.models import BoardState
+from app.models import BoardState, GameState, RobotMove
+from app.services import player
 from app.services.board import initialize_board
 
 app = FastAPI()
@@ -20,3 +22,28 @@ async def initialize_game_board():
     async with board_state_lock:
         board_state = initialize_board()
         return board_state
+
+
+@app.post("/move-robot", response_model=BoardState, summary="Move Robot")
+async def move_robot(move: RobotMove):
+    """
+    Move a robot or perform an attack.
+
+    This endpoint allows players to give instructions to a robot using its robot_id.
+    A robot can move up, move down, move left, move right, or perform an attack.
+    If an attack is performed, dinosaurs in adjacent cells are destroyed, and the player gains points.
+
+    Args:
+    move (RobotMove): The action to be performed by the robot.
+
+    Returns:
+    BoardState: The updated game state after the action is performed.
+    """
+    try:
+        global board_state  # Access the global board state
+        async with board_state_lock:
+            updated_state = player.perform_action(move, board_state)
+            board_state = updated_state  # Update the global board state
+            return updated_state  # Make sure updated_state is an instance of BoardState
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
