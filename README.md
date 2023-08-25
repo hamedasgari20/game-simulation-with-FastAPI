@@ -55,6 +55,9 @@ docker run -p 8000:8000 game-simulation-api
 ```
 
 6. Run without docker from source directory
+- Create VENV and activate it
+- install requirements
+Then run the following command
 ```angular2html
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```

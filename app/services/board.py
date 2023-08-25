@@ -26,8 +26,8 @@ def initialize_board() -> BoardState:
 
 def generate_unique_position(used_positions):
     while True:
-        x = random.randint(0, board_size)
-        y = random.randint(0, board_size)
+        x = random.randint(1, board_size)
+        y = random.randint(1, board_size)
         position = (x, y)
         if position not in used_positions:
             return x, y
