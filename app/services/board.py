@@ -1,11 +1,10 @@
 import random
 
-import settings
-from app.models import Robot, Dinosaur, BoardState
+from app.models import Robot, Dinosaur, BoardState, Player
+from settings import number_of_players, number_of_robots, number_of_dinosaurs, board_size
 
 
-
-def initialize_board(number_of_robots: int, number_of_dinosaurs: int, number_of_players: int) -> BoardState:
+def initialize_board() -> BoardState:
     used_positions = set()
     robots = []
     dinosaurs = []
@@ -27,8 +26,8 @@ def initialize_board(number_of_robots: int, number_of_dinosaurs: int, number_of_
 
 def generate_unique_position(used_positions):
     while True:
-        x = random.randint(0, settings.board_size)
-        y = random.randint(0, settings.board_size)
+        x = random.randint(0, board_size)
+        y = random.randint(0, board_size)
         position = (x, y)
         if position not in used_positions:
             return x, y

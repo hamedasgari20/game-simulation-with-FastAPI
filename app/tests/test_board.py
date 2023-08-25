@@ -20,7 +20,7 @@ class TestBoardService(unittest.TestCase):
         number_of_dinosaurs = 5
         number_of_players = 2
 
-        board_state = initialize_board(number_of_robots, number_of_dinosaurs, number_of_players)
+        board_state = initialize_board()
 
         self.assertEqual(len(board_state.robots), number_of_robots)
         self.assertEqual(len(board_state.dinosaurs), number_of_dinosaurs)
