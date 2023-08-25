@@ -47,3 +47,16 @@ async def move_robot(move: RobotMove):
             return updated_state  # Make sure updated_state is an instance of BoardState
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/game-state", response_model=BoardState, summary="Get Game State")
+async def get_game_state():
+    """
+    Get the current state of the game simulation.
+
+    Returns:
+    BoardState: The current state of the game simulation including player points.
+    """
+    global board_state
+    async with board_state_lock:
+        return board_state
