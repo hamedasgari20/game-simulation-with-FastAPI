@@ -1,7 +1,7 @@
-import asyncio
 from http.client import HTTPException
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
 from app.models import BoardState, RobotMove, BoardStateModel
@@ -10,25 +10,27 @@ from app.services.board import initialize_board
 
 app = FastAPI()
 
-# Define board_state as a global variable and initialize it
-board_state = None
-board_state_lock = asyncio.Lock()  # Create a lock to protect board_state access
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 # endpoint definitions...
 
 @app.post("/initialize-board", response_model=BoardState, summary="Initialize Game Board")
 async def initialize_game_board():
-    global board_state
-    async with board_state_lock:
-        board_state = initialize_board()
-        # Create a BoardStateModel instance and save it to the database
-        db = SessionLocal()
-        db_board_state = BoardStateModel(board_state=board_state.dict())
-        db.add(db_board_state)
-        db.commit()
-        db.refresh(db_board_state)
-        return board_state
+    board_state = initialize_board()
+    # Create a BoardStateModel instance and save it to the database
+    db = SessionLocal()
+    db_board_state = BoardStateModel(board_state=board_state.dict())
+    db.add(db_board_state)
+    db.commit()
+    db.refresh(db_board_state)
+    return board_state
 
 
 @app.post("/move-robot", response_model=BoardState, summary="Move Robot")
@@ -56,14 +58,19 @@ async def move_robot(move: RobotMove):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@app.get("/game-state", response_model=BoardState, summary="Get Game State")
-async def get_game_state():
+@app.get("/board-state/{board_id}", response_model=BoardState, summary="Get Board State by ID")
+async def get_board_state_by_id(board_id: int, db: Session = Depends(get_db)):
     """
-    Get the current state of the game simulation.
+    Get the state of the game simulation for a specific board ID.
+
+    Args:
+    board_id (int): The ID of the board for which to retrieve the state.
 
     Returns:
-    BoardState: The current state of the game simulation including player points.
+    BoardState: The state of the game simulation for the specified board ID.
     """
-    global board_state
-    async with board_state_lock:
-        return board_state
+    db_board_state = db.query(BoardStateModel).filter(BoardStateModel.id == board_id).first()
+    if db_board_state:
+        return db_board_state.board_state
+    else:
+        raise HTTPException(status_code=404, detail="Board state not found")
