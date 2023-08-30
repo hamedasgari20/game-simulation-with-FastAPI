@@ -3,6 +3,9 @@
 from typing import List
 
 from pydantic import BaseModel
+from sqlalchemy import Column, Integer, JSON
+
+from app.database import Base
 
 
 class Robot(BaseModel):
@@ -43,3 +46,10 @@ class BoardState(BaseModel):
     players: List[Player]  # List of players with their points
     robots: List[Robot]
     dinosaurs: List[Dinosaur]
+
+
+class BoardStateModel(Base):
+    __tablename__ = "board_states"
+
+    id = Column(Integer, primary_key=True, index=True)
+    board_state = Column(JSON)

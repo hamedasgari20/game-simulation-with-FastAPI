@@ -3,7 +3,8 @@ from http.client import HTTPException
 
 from fastapi import FastAPI
 
-from app.models import BoardState, GameState, RobotMove
+from app.database import SessionLocal
+from app.models import BoardState, RobotMove, BoardStateModel
 from app.services import player
 from app.services.board import initialize_board
 
@@ -21,6 +22,12 @@ async def initialize_game_board():
     global board_state
     async with board_state_lock:
         board_state = initialize_board()
+        # Create a BoardStateModel instance and save it to the database
+        db = SessionLocal()
+        db_board_state = BoardStateModel(board_state=board_state.dict())
+        db.add(db_board_state)
+        db.commit()
+        db.refresh(db_board_state)
         return board_state
 
 

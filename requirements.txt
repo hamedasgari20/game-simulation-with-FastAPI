@@ -1,3 +1,9 @@
-fastapi
+fastapi[all]
 uvicorn
 pydantic
+sqlalchemy
+psycopg2
+alembic
+databases
+asyncpg
+
