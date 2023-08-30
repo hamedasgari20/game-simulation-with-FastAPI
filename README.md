@@ -83,3 +83,28 @@ Modify **settings.py** to adjust game settings such as grid size and number of r
 - FastAPI
 - Uvicorn
 - Pydantic
+
+## Run docker compose
+file to run containers using folloewing command
+
+```angular2html
+docker-compose up --build
+```
+
+This command creates containers and runs them 
+
+## Generate Migrations
+Generate an initial migration using Alembic:
+
+```angular2html
+alembic revision --autogenerate -m "create_board_states_table"
+
+```
+
+## Apply Migrations
+Apply the migration to your database:
+
+```angular2html
+alembic upgrade head
+
+```
