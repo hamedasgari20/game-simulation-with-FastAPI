@@ -20,23 +20,6 @@ class Dinosaur(BaseModel):
     y: int
 
 
-class RobotMove(BaseModel):
-    robot_id: int
-    action: str
-
-
-class GameState(BaseModel):
-    robots: List[Robot]
-    dinosaurs: List[Dinosaur]
-    player_points: int
-
-
-class PlayerActionResponse(BaseModel):
-    success: bool
-    message: str
-    game_state: GameState
-
-
 class Player(BaseModel):
     id: int
     points: int = 0  # Initialize player points to zero
