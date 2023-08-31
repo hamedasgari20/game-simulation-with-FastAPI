@@ -73,9 +73,10 @@ def destroy_dinosaurs_around(robot: Robot, dinosaurs: List[Dinosaur]) -> List[Di
 
 
 def is_near_robot(dinosaur: Dinosaur, robot: Robot) -> bool:
-    # Implement a check to determine if the given dinosaur is near the robot
-    # You should check if the positions are adjacent (top, bottom, left, right)
-    return abs(dinosaur.x - robot.x) <= 1 and abs(dinosaur.y - robot.y) <= 1
+    # Check if the given dinosaur is adjacent to the robot (top, bottom, left, right)
+    x_diff = abs(dinosaur.x - robot.x)
+    y_diff = abs(dinosaur.y - robot.y)
+    return (x_diff == 1 and y_diff == 0) or (x_diff == 0 and y_diff == 1)
 
 
 def count_destroyed_dinosaurs(robot: Robot, dinosaurs: List[Dinosaur]) -> int:
