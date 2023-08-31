@@ -4,26 +4,38 @@ import settings
 from app.models import RobotMove, BoardState, Robot, Player, Dinosaur
 
 
-def perform_action(move: RobotMove, board_state: BoardState) -> BoardState:
+def perform_action(player_id: int, move: RobotMove, board_state: BoardState) -> BoardState:
     robot_id = move.robot_id
     action = move.action
 
     # Find the robot with the specified ID
-    try:
-        robot = next((r for r in board_state.robots if r.id == robot_id), None)
-        if robot:
+    robot_found = False
+    updated_robots = []
+    for robot in board_state.robots:
+        if robot.id == robot_id:
+            robot_found = True
             if action.startswith("move"):
-                updated_state = move_robot_position(robot, action, board_state)
+                updated_robot = move_robot_position(robot, action, board_state)
             elif action == "attack":
-                updated_state = attack_with_robot(robot, board_state)
+                updated_robot = attack_with_robot(robot, board_state)
             else:
                 raise ValueError("Invalid action")
-
-            return updated_state
+            updated_robots.append(updated_robot)
         else:
-            raise ValueError("Robot not found")
-    except Exception as e:
-        raise ValueError("Robot not found")
+            updated_robots.append(robot)
+
+    if not robot_found:
+        raise ValueError(f"Robot with ID {robot_id} not found")
+
+    # Create an updated BoardState with the new robots
+    updated_board_state = BoardState(players=board_state.players, robots=updated_robots,
+                                     dinosaurs=board_state.dinosaurs)
+    return updated_board_state
+
+    # Create an updated BoardState with the new robots
+    updated_board_state = BoardState(players=board_state.players, robots=updated_robots,
+                                     dinosaurs=board_state.dinosaurs)
+    return updated_board_state
 
 
 def move_robot_position(robot: Robot, action: str, board_state: BoardState) -> BoardState:
@@ -41,20 +53,34 @@ def move_robot_position(robot: Robot, action: str, board_state: BoardState) -> B
     return update_board_state(new_robot, board_state)
 
 
-def attack_with_robot(robot: Robot, board_state: BoardState) -> BoardState:
+def attack_with_robot(player_id: int, robot: Robot, board_state: BoardState) -> BoardState:
+    # Destroy dinosaurs around the robot
     updated_dinosaurs = destroy_dinosaurs_around(robot, board_state.dinosaurs)
     destroyed_dinosaur_ids = {dino.id for dino in updated_dinosaurs}
 
+    # Update player points
     updated_players = []
     for player in board_state.players:
-        if player.id in destroyed_dinosaur_ids:
-            updated_points = player.points + 1
+        if player.id == player_id:
+            updated_points = player.points + len(destroyed_dinosaur_ids)
+            updated_players.append(Player(id=player.id, points=updated_points))
         else:
-            updated_points = player.points
-        updated_players.append(Player(id=player.id, points=updated_points))
+            updated_players.append(player)
 
-    updated_state = BoardState(players=updated_players, robots=board_state.robots, dinosaurs=updated_dinosaurs)
+    # Update the robot's position (optional: remove the following if you don't want to update the robot's position)
+    updated_robot = robot.model_copy()  # Create a copy of the robot
+    updated_robot.x = robot.x - 1  # Update the robot's position (change this to the desired new position)
+
+    # Create a new BoardState with updated data
+    updated_state = BoardState(
+        players=updated_players,
+        robots=[updated_robot if r.id == robot.id else r for r in board_state.robots],
+        dinosaurs=[dino for dino in board_state.dinosaurs if dino.id not in destroyed_dinosaur_ids]
+    )
+
     return updated_state
+
+
 
 
 def destroy_dinosaurs_around(robot: Robot, dinosaurs: List[Dinosaur]) -> List[Dinosaur]:

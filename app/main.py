@@ -58,7 +58,7 @@ board_state_lock = asyncio.Lock()
 
 
 @app.post("/move-robot", response_model=BoardState, summary="Move Robot")
-async def move_robot(move: RobotMove, db: Session = Depends(get_db)):
+async def move_robot(board_id: int, player_id: int, move: RobotMove, db: Session = Depends(get_db)):
     """
     Move a robot or perform an attack.
 
@@ -67,6 +67,8 @@ async def move_robot(move: RobotMove, db: Session = Depends(get_db)):
     If an attack is performed, dinosaurs in adjacent cells are destroyed, and the player gains points.
 
     Args:
+    board_id (int): The ID of the board on which the move is being made.
+    player_id (int): The ID of the player making the move.
     move (RobotMove): The action to be performed by the robot.
 
     Returns:
@@ -74,7 +76,7 @@ async def move_robot(move: RobotMove, db: Session = Depends(get_db)):
     """
     async with board_state_lock:
         # Retrieve the latest board state from the database
-        db_board_state = db.query(BoardStateModel).order_by(BoardStateModel.id.desc()).first()
+        db_board_state = db.query(BoardStateModel).filter_by(id=board_id).order_by(BoardStateModel.id.desc()).first()
         if db_board_state:
             current_board_state_data = db_board_state.board_state
             current_board_state = BoardState(**current_board_state_data)
@@ -85,7 +87,7 @@ async def move_robot(move: RobotMove, db: Session = Depends(get_db)):
         updated_board_state = perform_action(move, current_board_state)
 
         # Update the board state in the database
-        new_db_board_state = BoardStateModel(board_state=updated_board_state)
+        new_db_board_state = BoardStateModel(board_state=updated_board_state.dict())
         db.add(new_db_board_state)
         db.commit()
         db.refresh(new_db_board_state)
