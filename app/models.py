@@ -20,6 +20,11 @@ class Dinosaur(BaseModel):
     y: int
 
 
+class RobotMove(BaseModel):
+    robot_id: int
+    action: str
+
+
 class Player(BaseModel):
     id: int
     points: int = 0  # Initialize player points to zero

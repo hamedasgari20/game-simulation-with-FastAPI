@@ -2,10 +2,12 @@ from http.client import HTTPException
 
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
+import asyncio
 
 from app.database import SessionLocal
-from app.models import BoardState, BoardStateModel
+from app.models import BoardState, BoardStateModel, RobotMove
 from app.services.board import initialize_board
+from app.services.player import perform_action
 
 app = FastAPI()
 
@@ -48,3 +50,42 @@ async def get_board_state_by_id(board_id: int, db: Session = Depends(get_db)):
         return db_board_state.board_state
     else:
         raise HTTPException(status_code=404, detail="Board state not found")
+
+
+# Define board_state_lock to handle concurrency and race conditions
+board_state_lock = asyncio.Lock()
+
+
+@app.post("/move-robot", response_model=BoardState, summary="Move Robot")
+async def move_robot(move: RobotMove, db: Session = Depends(get_db)):
+    """
+    Move a robot or perform an attack.
+
+    This endpoint allows players to give instructions to a robot using its robot_id.
+    A robot can move up, move down, move left, move right, or perform an attack.
+    If an attack is performed, dinosaurs in adjacent cells are destroyed, and the player gains points.
+
+    Args:
+    move (RobotMove): The action to be performed by the robot.
+
+    Returns:
+    BoardState: The updated game state after the action is performed.
+    """
+    async with board_state_lock:
+        # Retrieve the latest board state from the database
+        db_board_state = db.query(BoardStateModel).order_by(BoardStateModel.id.desc()).first()
+        if db_board_state:
+            current_board_state = db_board_state.board_state
+        else:
+            raise HTTPException(status_code=404, detail="Board state not found")
+
+        # Perform the action with the robot using the player's move
+        updated_board_state = perform_action(move, current_board_state)
+
+        # Update the board state in the database
+        new_db_board_state = BoardStateModel(board_state=updated_board_state)
+        db.add(new_db_board_state)
+        db.commit()
+        db.refresh(new_db_board_state)
+
+        return updated_board_state
