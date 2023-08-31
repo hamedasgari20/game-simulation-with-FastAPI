@@ -27,9 +27,10 @@ The project follows a modular design and is structured as follows:
 - `app/`: Contains the main application code.
   - `main.py`: Defines FastAPI application and API endpoints.
   - `models.py`: Defines Pydantic models for request and response data.
-  - `services/`: Contains service modules (e.g., `board.py`) with core logic.
+  - `services/`: Contains service modules (e.g., `board.py` and `player.py`) with core logic.
 - `tests/`: Contains unit tests for the application.
   - `test_board.py`: Example unit tests for the board service.
+  - `test_player.py`: Example unit tests for the player service.
 
 ## Getting Started
 
@@ -63,16 +64,26 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
 ## API Endpoints
-
-```angular2html
-POST /initialize-board
-```
-Initialize the game board with robots and dinosaurs.
-
+List of API endpoints
 ```angular2html
 POST /docs
 ```
-List of API endpoints
+
+Initialize the game board with robots and dinosaurs with following API.
+```angular2html
+POST /initialize-board
+```
+
+Get the state of the game simulation for a specific board ID.
+```angular2html
+GET /board-state/{board_id}
+```
+
+Move a robot or perform an attack.
+```angular2html
+POST /move-robot
+```
+
 
 
 ## Configurations
@@ -85,7 +96,7 @@ Modify **settings.py** to adjust game settings such as grid size and number of r
 - Pydantic
 
 ## Run docker compose
-file to run containers using folloewing command
+file to run containers using following command
 
 ```angular2html
 docker-compose up --build
