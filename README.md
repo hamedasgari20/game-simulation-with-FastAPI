@@ -75,11 +75,34 @@ POST /initialize-board
 ```
 
 Get the state of the game simulation for a specific board ID.
+here is its information:
+```angular2html
+    Get the state of the game simulation for a specific board ID.
+
+    Args:
+    board_id (int): The ID of the board for which to retrieve the state.
+
+    Returns:
+    BoardState: The state of the game simulation for the specified board ID.
+```
 ```angular2html
 GET /board-state/{board_id}
 ```
 
 Move a robot or perform an attack.
+here is its information:
+
+```angular2html
+    Move a robot or perform an attack.
+
+    Args:
+    board_id (int): The ID of the board on which the move is being made.
+    player_id (int): The ID of the player making the move.
+    move (RobotMove): The action to be performed by the robot.
+
+    Returns:
+    BoardState: The updated game state after the action is performed.
+```
 ```angular2html
 POST /move-robot
 ```
@@ -119,3 +142,28 @@ Apply the migration to your database:
 alembic upgrade head
 
 ```
+
+## Challenges in this project
+In the following, some of the main challenges in this project have been discussed.
+
+#### The first challenge: 
+The main challenge for me in this project was that I had never worked with FastAPI before and it was the first time I wanted to run a project with FastAPI. I was able to implement this project by researching studying and using artificial intelligence tools.
+
+#### The second challenge: 
+because I am currently working, I had very limited time to devote to this task, so I was able to handle the project by working late and using my days off.
+
+#### The third challenge: 
+In the project, many parts have to be created from scratch such as migration creation and database connection, such as how to do migrations, which I found out through research.
+
+#### The fourth challenge: 
+So far, most of the needs that have been solved were related to needs like updating the login page or filtering more pages in the field of web development, and this type of simulation was new to me, but by thinking and researching, I was able to do it for I was also attractive
+
+
+## final word
+
+Finally, thank you for the time you spend on the interview and review of the task. I hope I have the honor to work in your research team
+
+
+with the best wishes
+
+Hamed Asgari
