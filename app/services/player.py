@@ -67,7 +67,7 @@ def destroy_dinosaurs_around(robot: Robot, dinosaurs: List[Dinosaur]) -> List[Di
     adjacent_cells = {(x, y) for x, y in adjacent_coordinates}
 
     # Filter out dinosaurs that are in adjacent cells
-    updated_dinosaurs = [dino for dino in dinosaurs if (dino.x, dino.y) not in adjacent_cells]
+    updated_dinosaurs = [dino for dino in dinosaurs if (dino.x, dino.y) in adjacent_cells]
 
     return updated_dinosaurs
 
