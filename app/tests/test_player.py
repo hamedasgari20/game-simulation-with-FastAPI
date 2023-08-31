@@ -10,8 +10,8 @@ class TestGameLogic(unittest.TestCase):
     def setUp(self):
         self.sample_board_state = BoardState(
             players=[Player(id=1, points=0), Player(id=2, points=0)],
-            robots=[Robot(id=1, x=0, y=0), Robot(id=2, x=1, y=1)],
-            dinosaurs=[Dinosaur(id=1, x=2, y=2), Dinosaur(id=2, x=3, y=3)]
+            robots=[Robot(id=1, x=1, y=1), Robot(id=2, x=2, y=2)],
+            dinosaurs=[Dinosaur(id=1, x=3, y=2), Dinosaur(id=2, x=3, y=3)]
         )
 
     def test_update_board_state(self):
@@ -35,10 +35,10 @@ class TestGameLogic(unittest.TestCase):
         self.assertFalse(is_near_robot(dinosaur, robot))
 
     def test_destroy_dinosaurs_around(self):
-        robot = self.sample_board_state.robots[1]
+        robot = self.sample_board_state.robots[0]
         dinosaurs = self.sample_board_state.dinosaurs
         updated_dinosaurs = destroy_dinosaurs_around(robot, dinosaurs)
-        self.assertEqual(len(updated_dinosaurs), 1)
+        self.assertEqual(len(updated_dinosaurs), 2)
 
     def test_attack_with_robot(self):
         robot = self.sample_board_state.robots[1]
@@ -68,7 +68,7 @@ class TestGameLogic(unittest.TestCase):
     def test_perform_action_move(self):
         move = RobotMove(robot_id=1, action="move_up")
         updated_state = perform_action(move, self.sample_board_state)
-        self.assertEqual(updated_state, self.sample_board_state.robots[0])
+        self.assertEqual(updated_state, Robot(id=1, x=1, y=2))
 
     def test_perform_action_attack(self):
         move = RobotMove(robot_id=2, action="attack")

@@ -54,13 +54,22 @@ def attack_with_robot(robot: Robot, board_state: BoardState) -> BoardState:
     return updated_state
 
 
-
-
 def destroy_dinosaurs_around(robot: Robot, dinosaurs: List[Dinosaur]) -> List[Dinosaur]:
-    # Implement the logic to destroy dinosaurs around the robot
-    # Return the updated list of dinosaurs after destruction
-    # You should check the positions of dinosaurs around the robot and remove them
-    return [dino for dino in dinosaurs if not is_near_robot(dino, robot)]
+    # Calculate the coordinates of adjacent cells around the robot
+    adjacent_coordinates = [
+        (robot.x - 1, robot.y),
+        (robot.x + 1, robot.y),
+        (robot.x, robot.y - 1),
+        (robot.x, robot.y + 1),
+    ]
+
+    # Create a set of coordinates of adjacent cells
+    adjacent_cells = {(x, y) for x, y in adjacent_coordinates}
+
+    # Filter out dinosaurs that are in adjacent cells
+    updated_dinosaurs = [dino for dino in dinosaurs if (dino.x, dino.y) not in adjacent_cells]
+
+    return updated_dinosaurs
 
 
 def is_near_robot(dinosaur: Dinosaur, robot: Robot) -> bool:
