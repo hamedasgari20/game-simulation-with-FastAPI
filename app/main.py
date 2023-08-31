@@ -84,7 +84,7 @@ async def move_robot(board_id: int, player_id: int, move: RobotMove, db: Session
             raise HTTPException(status_code=404, detail="Board state not found")
 
         # Perform the action with the robot using the player's move
-        updated_board_state = perform_action(move, current_board_state)
+        updated_board_state = perform_action(player_id, move, current_board_state)
 
         # Update the board state in the database
         new_db_board_state = BoardStateModel(board_state=updated_board_state.dict())

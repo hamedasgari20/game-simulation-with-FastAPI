@@ -17,7 +17,7 @@ def perform_action(player_id: int, move: RobotMove, board_state: BoardState) -> 
             if action.startswith("move"):
                 updated_robot = move_robot_position(robot, action, board_state)
             elif action == "attack":
-                updated_robot = attack_with_robot(robot, board_state)
+                updated_robot = attack_with_robot(player_id, robot, board_state)
             else:
                 raise ValueError("Invalid action")
             updated_robots.append(updated_robot)
