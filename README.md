@@ -99,9 +99,11 @@ here is its information:
     board_id (int): The ID of the board on which the move is being made.
     player_id (int): The ID of the player making the move.
     move (RobotMove): The action to be performed by the robot.
+    possible arguments: move_up, move_down, move_left, move_right, attack (if robot be adjacent to a dinosaur)
 
     Returns:
     BoardState: The updated game state after the action is performed.
+    When robot attacks to a dinosaur it replace dinosaur location, one point has been granted to the player and game board updates
 ```
 ```angular2html
 POST /move-robot
