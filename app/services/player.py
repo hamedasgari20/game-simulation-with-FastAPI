@@ -9,17 +9,20 @@ def perform_action(move: RobotMove, board_state: BoardState) -> BoardState:
     action = move.action
 
     # Find the robot with the specified ID
-    robot = next((r for r in board_state.robots if r.id == robot_id), None)
-    if robot:
-        if action.startswith("move"):
-            updated_state = move_robot_position(robot, action, board_state)
-        elif action == "attack":
-            updated_state = attack_with_robot(robot, board_state)
-        else:
-            raise ValueError("Invalid action")
+    try:
+        robot = next((r for r in board_state.robots if r.id == robot_id), None)
+        if robot:
+            if action.startswith("move"):
+                updated_state = move_robot_position(robot, action, board_state)
+            elif action == "attack":
+                updated_state = attack_with_robot(robot, board_state)
+            else:
+                raise ValueError("Invalid action")
 
-        return updated_state
-    else:
+            return updated_state
+        else:
+            raise ValueError("Robot not found")
+    except Exception as e:
         raise ValueError("Robot not found")
 
 

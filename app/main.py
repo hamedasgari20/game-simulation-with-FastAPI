@@ -1,8 +1,9 @@
+import asyncio
+import json
 from http.client import HTTPException
 
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
-import asyncio
 
 from app.database import SessionLocal
 from app.models import BoardState, BoardStateModel, RobotMove
@@ -75,7 +76,8 @@ async def move_robot(move: RobotMove, db: Session = Depends(get_db)):
         # Retrieve the latest board state from the database
         db_board_state = db.query(BoardStateModel).order_by(BoardStateModel.id.desc()).first()
         if db_board_state:
-            current_board_state = db_board_state.board_state
+            current_board_state_data = db_board_state.board_state
+            current_board_state = BoardState(**current_board_state_data)
         else:
             raise HTTPException(status_code=404, detail="Board state not found")
 
